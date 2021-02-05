@@ -50,6 +50,7 @@
 #include "flashgg/DataFormats/interface/TagAndProbeCandidate.h" //spigazzi
 #include "flashgg/DataFormats/interface/DoubleHTag.h"
 #include "flashgg/DataFormats/interface/VBFDoubleHTag.h"
+#include "flashgg/DataFormats/interface/VBFNjetTag.h"
 #include <vector>
 #include <map>
 
@@ -267,6 +268,10 @@ namespace  {
         flashgg::VBFTagTruth vbftt;
         std::vector<flashgg::VBFTagTruth> vec_vbftt;
         edm::Wrapper<std::vector<flashgg::VBFTagTruth> > wrp_vec_vbftt;
+
+        flashgg::VBFNjetTag vbfNjet_cat;
+        std::vector<flashgg::VBFNjetTag> vec_vbfnjet_cat;
+        edm::Wrapper<std::vector<flashgg::VBFNjetTag> > wrp_vec_vbfnjet_cat;
 
         flashgg::VHTagTruth vhtt;
         std::vector<flashgg::VHTagTruth> vec_vhtt;

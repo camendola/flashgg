@@ -4,7 +4,7 @@ from flashgg.MicroAOD.flashggJets_cfi import UnpackedJetCollectionVInputTag
 
 flashggVBFNjetTag = cms.EDProducer("FlashggVBFNjetTagProducer",
                                    DiPhotonTag                 = cms.InputTag('flashggPreselectedDiPhotons'),
-                                   VBFDiPhoDiJetMVAResult      = cms.InputTag('flashggVBFMVA'),
+                                   VBFDiPhoDiJetMVAResultTag   = cms.InputTag('flashggVBFMVA'),
                                    MVAResultTag                = cms.InputTag('flashggDiPhotonMVA'),
                                    inputTagJets                = UnpackedJetCollectionVInputTag
                                )

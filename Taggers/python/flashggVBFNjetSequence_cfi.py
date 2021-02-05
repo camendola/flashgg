@@ -3,7 +3,7 @@ from flashgg.MicroAOD.flashggJets_cfi import flashggUnpackedJets
 from flashgg.Taggers.flashggDiPhotonMVA_cfi import flashggDiPhotonMVA
 from flashgg.Taggers.flashggPreselectedDiPhotons_cfi import flashggPreselectedDiPhotons
 from flashgg.Taggers.flashggDifferentialPhoIdInputsCorrection_cfi import flashggDifferentialPhoIdInputsCorrection, setup_flashggDifferentialPhoIdInputsCorrection
-from flashgg.Taggers.flashggVBFNjet_cff import *
+from flashgg.Taggers.flashggVBFNjetTag_cff import *
 
 def flashggPrepareVBFNjetSequence(process, options):
     setup_flashggDifferentialPhoIdInputsCorrection(process, options)
@@ -16,7 +16,7 @@ def flashggPrepareVBFNjetSequence(process, options):
                                       * flashggPreselectedDiPhotons
                                       * flashggDiPhotonMVA
                                       * flashggUnpackedJets
-                                      * flashggVBFNjet
+                                      * flashggVBFNjetTag
     )
 
     return flashggVBFNjetSequence
