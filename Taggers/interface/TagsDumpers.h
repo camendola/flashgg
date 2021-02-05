@@ -60,8 +60,7 @@ namespace flashgg {
             CutBasedClassifier<ZHLeptonicTag> > CutBasedZHLeptonicTagDumper;
     typedef CollectionDumper<std::vector<VBFNjetTag>,
             VBFNjetTag,
-            CutBasedClassifier<VBFNjetTag> > VBFNjetTagDumper;
-
+            CutBasedClassifier<VBFNjetTag> > CutBasedVBFNjetTagDumper;
 }
 
 #endif
