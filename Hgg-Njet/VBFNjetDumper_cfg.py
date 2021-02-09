@@ -48,7 +48,7 @@ else: process.GlobalTag.globaltag = str(customize.metaConditions['globalTags']['
 #========================================================================================
 ### Set VBFNjet Producer
 process.load('flashgg.Taggers.flashggVBFNjetSequence_cfi')
-print("OK")
+
 from flashgg.Taggers.flashggVBFNjetSequence_cfi import *
 process.flashggVBFNjetSequence = flashggPrepareVBFNjetSequence( process, customize.metaConditions )
 #process.flashggVBFNjetTag.leadPhoOverMassThreshold = cms.double(0.25)
@@ -75,7 +75,7 @@ process.VBFNjetTagDumper.className = "CutBasedVBFNjetDumper"
 process.VBFNjetTagDumper.dumpTrees     = True
 process.VBFNjetTagDumper.dumpHistos    = False
 process.VBFNjetTagDumper.dumpWorkspace = False
-process.VBFNjetTagDumper.src = "flashggVBFNjet"
+process.VBFNjetTagDumper.src = "flashggVBFNjetTag"
 process.VBFNjetTagDumper.nameTemplate = cms.untracked.string("$PROCESS_$SQRTS_$CLASSNAME_$SUBCAT_$LABEL")
 
 # ===============================================================================================
@@ -94,15 +94,34 @@ vbf_variables = [
     "dipho_subleadE         := diPhoton.subLeadingPhoton.energy",
     "dipho_subleadIDMVA     := diPhoton.subLeadingView.phoIdMvaWrtChosenVtx",
 
-    "n_jet                  := jets.size",
-    "jet1_Pt                := ?(jets.size>0)? jets.at(0).pt               : -999",
-    "jet1_Eta               := ?(jets.size>0)? jets.at(0).eta              : -999",
-    "jet1_Phi               := ?(jets.size>0)? jets.at(0).phi              : -999",
-    "jet1_E                 := ?(jets.size>0)? jets.at(0).energy           : -999",
-    "jet2_Pt                := ?(jets.size>1)? jets.at(1).pt               : -999",
-    "jet2_Eta               := ?(jets.size>1)? jets.at(1).eta              : -999",
-    "jet2_Phi               := ?(jets.size>1)? jets.at(1).phi              : -999",
-    "jet2_E                 := ?(jets.size>1)? jets.at(1).energy           : -999",
+    "n_jet                  := jets_bypt.size",
+
+    "jet1_Pt                := ?(jets_bypt.size>0)? jets_bypt.at(0).pt               : -999",
+    "jet1_Eta               := ?(jets_bypt.size>0)? jets_bypt.at(0).eta              : -999",
+    "jet1_Phi               := ?(jets_bypt.size>0)? jets_bypt.at(0).phi              : -999",
+    "jet1_E                 := ?(jets_bypt.size>0)? jets_bypt.at(0).energy           : -999",
+    "jet2_Pt                := ?(jets_bypt.size>1)? jets_bypt.at(1).pt               : -999",
+    "jet2_Eta               := ?(jets_bypt.size>1)? jets_bypt.at(1).eta              : -999",
+    "jet2_Phi               := ?(jets_bypt.size>1)? jets_bypt.at(1).phi              : -999",
+    "jet2_E                 := ?(jets_bypt.size>1)? jets_bypt.at(1).energy           : -999",
+    "jet3_Pt                := ?(jets_bypt.size>2)? jets_bypt.at(2).pt               : -999",
+    "jet3_Eta               := ?(jets_bypt.size>2)? jets_bypt.at(2).eta              : -999",
+    "jet3_Phi               := ?(jets_bypt.size>2)? jets_bypt.at(2).phi              : -999",
+    "jet3_E                 := ?(jets_bypt.size>2)? jets_bypt.at(2).energy           : -999",
+
+    "jet1_bymjj_Pt          := ?(jets_bymjj.size>0)? jets_bymjj.at(0).pt             : -999",
+    "jet1_bymjj_Eta         := ?(jets_bymjj.size>0)? jets_bymjj.at(0).eta            : -999",
+    "jet1_bymjj_Phi         := ?(jets_bymjj.size>0)? jets_bymjj.at(0).phi            : -999",
+    "jet1_bymjj_E           := ?(jets_bymjj.size>0)? jets_bymjj.at(0).energy         : -999",
+    "jet2_bymjj_Pt          := ?(jets_bymjj.size>1)? jets_bymjj.at(1).pt             : -999",
+    "jet2_bymjj_Eta         := ?(jets_bymjj.size>1)? jets_bymjj.at(1).eta            : -999",
+    "jet2_bymjj_Phi         := ?(jets_bymjj.size>1)? jets_bymjj.at(1).phi            : -999",
+    "jet2_bymjj_E           := ?(jets_bymjj.size>1)? jets_bymjj.at(1).energy         : -999",
+    "jet3_bymjj_Pt          := ?(jets_bymjj.size>2)? jets_bymjj.at(2).pt             : -999",
+    "jet3_bymjj_Eta         := ?(jets_bymjj.size>2)? jets_bymjj.at(2).eta            : -999",
+    "jet3_bymjj_Phi         := ?(jets_bymjj.size>2)? jets_bymjj.at(2).phi            : -999",
+    "jet3_bymjj_E           := ?(jets_bymjj.size>2)? jets_bymjj.at(2).energy         : -999",
+
 ]
 
 #wh_variables += [

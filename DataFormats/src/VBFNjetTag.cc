@@ -7,14 +7,25 @@ VBFNjetTag::VBFNjetTag() : DiPhotonTagBase::DiPhotonTagBase() {}
 
 VBFNjetTag::~VBFNjetTag() {}
 
-VBFNjetTag::VBFNjetTag(edm::Ptr<flashgg::DiPhotonCandidate> diPho, edm::Ptr<DiPhotonMVAResult> mvaRes, edm::Ptr<VBFDiPhoDiJetMVAResult> vbfDiPhoDiJet_mvaRes) :
-    VBFNjetTag::VBFNjetTag(diPho, *mvaRes, *vbfDiPhoDiJet_mvaRes) {}
+//VBFNjetTag::VBFNjetTag(edm::Ptr<flashgg::DiPhotonCandidate> diPho, edm::Ptr<DiPhotonMVAResult> mvaRes, edm::Ptr<VBFDiPhoDiJetMVAResult> vbfDiPhoDiJet_mvaRes) :
+//    VBFNjetTag::VBFNjetTag(diPho, *mvaRes, *vbfDiPhoDiJet_mvaRes) {}
+//
+//VBFNjetTag::VBFNjetTag(edm::Ptr<DiPhotonCandidate> dipho, DiPhotonMVAResult mvares, VBFDiPhoDiJetMVAResult vbfDiPhoDiJet_mvaRes) :
+//    DiPhotonTagBase::DiPhotonTagBase(dipho, mvares) {}
 
-VBFNjetTag::VBFNjetTag(edm::Ptr<DiPhotonCandidate> dipho, DiPhotonMVAResult mvares, VBFDiPhoDiJetMVAResult vbfDiPhoDiJet_mvaRes) :
+VBFNjetTag::VBFNjetTag(edm::Ptr<flashgg::DiPhotonCandidate> diPho, edm::Ptr<DiPhotonMVAResult> mvaRes) :
+    VBFNjetTag::VBFNjetTag(diPho, *mvaRes) {}
+
+VBFNjetTag::VBFNjetTag(edm::Ptr<DiPhotonCandidate> dipho, DiPhotonMVAResult mvares) :
     DiPhotonTagBase::DiPhotonTagBase(dipho, mvares) {}
 
-//VBFNjetTag::VBFNjetTag( edm::Ptr<DiPhotonCandidate> diPho, edm::Ptr<DiPhotonMVAResult> mvares ) : DiPhotonTagBase::DiPhotonTagBase( diPho, *mvares ) {}
-//VBFNjetTag::VBFNjetTag( edm::Ptr<DiPhotonCandidate> dipho, DiPhotonMVAResult mvares ) : DiPhotonTagBase::DiPhotonTagBase( dipho, mvares ) {}
+
+//VBFNjetTag::VBFNjetTag(edm::Ptr<flashgg::DiPhotonCandidate> diPho) :
+//    VBFNjetTag::VBFNjetTag(diPho) {}
+//
+//VBFNjetTag::VBFNjetTag(edm::Ptr<DiPhotonCandidate> dipho) :
+//    DiPhotonTagBase::DiPhotonTagBase(dipho) {}
+
 
 
 // Local Variables:
