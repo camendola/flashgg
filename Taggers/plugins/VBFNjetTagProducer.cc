@@ -13,6 +13,7 @@
 
 #include <TLorentzVector.h>
 #include <vector>
+#include <utility>
 #include <algorithm>
 #include <typeinfo>
 
@@ -44,6 +45,8 @@ namespace flashgg {
         EDGetTokenT<View<DiPhotonMVAResult> >                       mvaResultToken_;
         std::vector<edm::EDGetTokenT<View<flashgg::Jet> > >         tokenJets_;
         std::vector<edm::InputTag>                                  inputTagJets_;
+        EDGetTokenT<View<reco::GenParticle> >                       genPartToken_;
+        EDGetTokenT<View<reco::GenJet> >                            genJetToken_;
         bool                                                        debug_;
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
     };
@@ -53,6 +56,8 @@ namespace flashgg {
         //vbfDiPhoDiJetMvaResultToken_( consumes < View < flashgg::VBFDiPhoDiJetMVAResult > >( iConfig.getParameter < InputTag > ( "VBFDiPhoDiJetMVAResultTag" ))),
         mvaResultToken_(consumes< View < flashgg::DiPhotonMVAResult > > (iConfig.getParameter < InputTag > ( "MVAResultTag" ))),   
         inputTagJets_  (iConfig.getParameter < std::vector < edm::InputTag > >( "inputTagJets" )), 
+        genPartToken_  (consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
+        genJetToken_   (consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ( "GenJetTag" ) ) ),
         debug_         (iConfig.getParameter <bool>( "debug" ))
     {    
         for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
@@ -71,6 +76,9 @@ namespace flashgg {
         Handle<View<flashgg::DiPhotonMVAResult> > mvaResults;
         evt.getByToken( mvaResultToken_, mvaResults );
         
+        Handle<View<reco::GenParticle> > genParticles;
+        Handle<View<reco::GenJet> > genJets;
+       
         //Handle<View<flashgg::VBFDiPhoDiJetMVAResult> > vbfDiPhoDiJetMvaResults;
         //evt.getByToken( vbfDiPhoDiJetMvaResultToken_, vbfDiPhoDiJetMvaResults );
         
@@ -79,22 +87,66 @@ namespace flashgg {
             evt.getByToken(tokenJets_[j], Jets[j]);
         }
         
-        std::unique_ptr<vector<VBFNjetTag> > vbfnjet_tags(new vector<VBFNjetTag>);
+
+        std::unique_ptr<vector<VBFNjetTag> >   vbfnjet_tags(new vector<VBFNjetTag>);
         
-        for(unsigned int idipho = 0; idipho < diPhotons->size(); idipho++) {
-           
+        // --- find gen qg from hard scattering
+        edm::Ptr<reco::GenParticle> genPart1, genPart2;        
+        std::vector<std::pair<float, int> > genpart_idx;
+        if( ! evt.isRealData() ) 
+            {
+                evt.getByToken( genPartToken_, genParticles );
+                evt.getByToken( genJetToken_, genJets );
+                for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                    edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
+                    bool hasHiggs = false; 
+                    if(part->isHardProcess()) {
+                        if(abs(part->pdgId()) <= 5 || part->pdgId() == 21) { // quark or gluon
+                            // check if mother has Higgs daughter
+                            for(unsigned int im = 0 ; im < part->numberOfMothers() ; ++im)
+                                {
+                                    const reco::Candidate* mparticle = part->mother(im);
+                                    for(unsigned int id = 0 ; id < mparticle->numberOfDaughters() ; ++id)
+                                        {
+                                            const reco::Candidate* dparticle = mparticle->daughter(id);
+                                            if(dparticle->pdgId() == 25) hasHiggs = true ;
+                                            if(hasHiggs) break;
+                                        }
+                                }                        
+                            if (hasHiggs) genpart_idx.push_back(std::make_pair(part->pt(), genLoop));                        
+                        }                    
+                    }
+                } // end gen loop
+            
+                std::sort(genpart_idx.begin(), genpart_idx.end());
+                if (debug_)
+                    {                                      
+                        std::cout << "@@@ DEBUG"<<endl;
+                        std::cout << "  genPart by pt: " << std::endl;
+                        for (size_t i = 0; i < genpart_idx.size(); ++i)  std::cout << "  " <<  genpart_idx.at(i).first << "  " <<  genpart_idx.at(i).second << std::endl;   
+                        std::cout << std::endl;
+                        std::cout << "  genPart1: " <<  (*(genpart_idx.rbegin())).first     << "  " <<  (*(genpart_idx.rbegin())).second   << std::endl;
+                        std::cout << "  genPart2: " <<  (*(genpart_idx.rbegin() + 1)).first << "  " <<  (*(genpart_idx.rbegin()+1)).second << std::endl;
+                    }
+                
+                if (genpart_idx.size() > 0) genPart1 = genParticles->ptrAt((*(genpart_idx.rbegin())).second);
+                if (genpart_idx.size() > 1) genPart2 = genParticles->ptrAt((*(genpart_idx.rbegin() + 1)).second);            
+            }
+        // ---- end of gen p/q stuff
+        
+        for(unsigned int idipho = 0; idipho < diPhotons->size(); idipho++) {           
             //edm::Ptr<flashgg::VBFDiPhoDiJetMVAResult> vbfdipho_mvares = vbfDiPhoDiJetMvaResults->ptrAt(idipho);
             edm::Ptr<flashgg::DiPhotonMVAResult>      mvares          = mvaResults->ptrAt(idipho); 
             edm::Ptr<flashgg::DiPhotonCandidate>      dipho           = diPhotons->ptrAt(idipho);
-           
+            
             //VBFNjetTag vbfnjet_tags_obj(dipho, mvares, vbfdipho_mvares);
             VBFNjetTag vbfnjet_tags_obj(dipho, mvares);
             vbfnjet_tags_obj.includeWeights( *dipho );
-           
-            //highest pt jets
-            std::vector<edm::Ptr<Jet> >            tagJets_bypt;
             
+            // ---- highest pt jets
+            std::vector<edm::Ptr<Jet> >            tagJets_bypt;
             unsigned int jetCollectionIndex = diPhotons->ptrAt(idipho)->jetCollectionIndex();            
+            
             for( unsigned int ijet = 0; ijet < Jets[jetCollectionIndex]->size(); ijet++) {
                 edm::Ptr<flashgg::Jet> jet = Jets[jetCollectionIndex]->ptrAt(ijet);
                 if(!jet->passesJetID (flashgg::Tight2017)) continue;
@@ -107,7 +159,7 @@ namespace flashgg {
                 tagJets_bypt.push_back(jet);
             }   
 
-            //highest mjj jets
+            // ---- highest mjj jets
             std::vector<edm::Ptr<Jet> >            tagJets_bymjj;                 // first 2 jets: highest mjj; following: all the other jets by pt
             std::vector< tuple<float, unsigned int, unsigned int> >  pair_bymjj;  // (mjj, idx1, idx2)
             
@@ -154,17 +206,23 @@ namespace flashgg {
                     std::cout << std::endl;
                     std::cout << "  Jets by mjj: ";
                     for (size_t i = 0; i < tagJets_bymjj.size(); ++i)  std::cout << "  " <<  tagJets_bymjj[i]->pt() << "  ";   
-                    std::cout << '\n';
+                    std::cout << std::endl;
                 }
-
+            
+            
+            
             vbfnjet_tags_obj.setJets_bymjj(tagJets_bymjj);
             vbfnjet_tags_obj.setJets_bypt(tagJets_bypt);     
+            vbfnjet_tags_obj.setTB(tagJets_bypt);
+            if (!evt.isRealData()) {
+                if (genpart_idx.size() > 0) vbfnjet_tags_obj.setgenParticle1(genPart1);
+                if (genpart_idx.size() > 1) vbfnjet_tags_obj.setgenParticle2(genPart2);
+            }
             vbfnjet_tags->push_back(vbfnjet_tags_obj);    
-            
         }
         evt.put(std::move(vbfnjet_tags));
     }  
-
+    
 }
 
 typedef flashgg::VBFNjetTagProducer FlashggVBFNjetTagProducer;

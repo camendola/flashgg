@@ -7,5 +7,7 @@ flashggVBFNjetTag = cms.EDProducer("FlashggVBFNjetTagProducer",
                                    VBFDiPhoDiJetMVAResultTag   = cms.InputTag('flashggVBFMVA'),
                                    MVAResultTag                = cms.InputTag('flashggDiPhotonMVA'),
                                    inputTagJets                = UnpackedJetCollectionVInputTag,
-                                   debug                       = cms.bool(False)
+                                   GenParticleTag              = cms.InputTag( "flashggPrunedGenParticles" ),
+                                   GenJetTag                   = cms.InputTag("slimmedGenJets"),
+                                   debug                       = cms.bool(True)
                                )
