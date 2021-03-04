@@ -167,7 +167,14 @@
 <class name="std::vector<flashgg::VBFTagTruth>"/>
 <class name="edm::Wrapper<std::vector<flashgg::VBFTagTruth> >"/>
 
-<class name="flashgg::VBFNjetTag" ClassVersion="12">
+<class name="flashgg::VBFNjetTag" ClassVersion="19">
+ <version ClassVersion="19" checksum="3869512282"/>
+ <version ClassVersion="18" checksum="1927214023"/>
+ <version ClassVersion="17" checksum="591152404"/>
+ <version ClassVersion="16" checksum="3943232746"/>
+ <version ClassVersion="15" checksum="3458028749"/>
+ <version ClassVersion="14" checksum="3943232746"/>
+ <version ClassVersion="13" checksum="3458028749"/>
  <version ClassVersion="12" checksum="3359296039"/>
 <version ClassVersion="11" checksum="2224779327"/>
 <version ClassVersion="10" checksum="2086446652"/>

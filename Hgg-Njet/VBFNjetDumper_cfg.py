@@ -16,7 +16,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1 )
 
 process.source = cms.Source ("PoolSource",
                              fileNames = cms.untracked.vstring(
-'file:/eos/cms/store/group/phys_higgs/cmshgg/alesauva/flashgg/UL2017/10_6_4/VBFHToGG_M125_TuneCP5_13TeV-amcatnlo-pythia8/UL2017-10_6_4-v0-RunIISummer19UL17MiniAOD-106X_mc2017_realistic_v6-v2/200514_145023/0000/myMicroAODOutputFile_8.root'
+#'file:/eos/cms/store/group/phys_higgs/cmshgg/alesauva/flashgg/UL2017/10_6_4/VBFHToGG_M125_TuneCP5_13TeV-amcatnlo-pythia8/UL2017-10_6_4-v0-RunIISummer19UL17MiniAOD-106X_mc2017_realistic_v6-v2/200514_145023/0000/myMicroAODOutputFile_8.root'
+'file:/eos/cms/store/group/phys_higgs/cmshgg/alesauva/flashgg/UL2017/10_6_4/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/UL2017-10_6_4-v0-RunIISummer19UL17MiniAOD-106X_mc2017_realistic_v6-v2/200514_143038/0000/myMicroAODOutputFile_10.root'
                              )
 )
 
@@ -97,31 +98,66 @@ vbf_variables = [
     "n_jet                  := jets_bypt.size",
 
     "jet1_Pt                := ?(jets_bypt.size>0)? jets_bypt.at(0).pt               : -999",
+    "jet1_TB                := ?(jets_bypt.size>0)? TB_bypt.at(0)                    : -999",
     "jet1_Eta               := ?(jets_bypt.size>0)? jets_bypt.at(0).eta              : -999",
     "jet1_Phi               := ?(jets_bypt.size>0)? jets_bypt.at(0).phi              : -999",
     "jet1_E                 := ?(jets_bypt.size>0)? jets_bypt.at(0).energy           : -999",
     "jet2_Pt                := ?(jets_bypt.size>1)? jets_bypt.at(1).pt               : -999",
     "jet2_Eta               := ?(jets_bypt.size>1)? jets_bypt.at(1).eta              : -999",
+    "jet2_TB                := ?(jets_bypt.size>1)? TB_bypt.at(1)                    : -999",
+    "jet2_TC                := ?(jets_bypt.size>1)? TC_bypt.at(1)                    : -999",
     "jet2_Phi               := ?(jets_bypt.size>1)? jets_bypt.at(1).phi              : -999",
     "jet2_E                 := ?(jets_bypt.size>1)? jets_bypt.at(1).energy           : -999",
     "jet3_Pt                := ?(jets_bypt.size>2)? jets_bypt.at(2).pt               : -999",
+    "jet3_TB                := ?(jets_bypt.size>2)? TB_bypt.at(2)                    : -999",
+    "jet3_TC                := ?(jets_bypt.size>2)? TC_bypt.at(2)                    : -999",
     "jet3_Eta               := ?(jets_bypt.size>2)? jets_bypt.at(2).eta              : -999",
     "jet3_Phi               := ?(jets_bypt.size>2)? jets_bypt.at(2).phi              : -999",
     "jet3_E                 := ?(jets_bypt.size>2)? jets_bypt.at(2).energy           : -999",
-
     "jet1_bymjj_Pt          := ?(jets_bymjj.size>0)? jets_bymjj.at(0).pt             : -999",
+    "jet1_bymjj_TB          := ?(jets_bymjj.size>0)? TB_bymjj.at(0)                  : -999",
+    "jet1_bymjj_TC          := ?(jets_bymjj.size>0)? TC_bymjj.at(0)                  : -999",
     "jet1_bymjj_Eta         := ?(jets_bymjj.size>0)? jets_bymjj.at(0).eta            : -999",
     "jet1_bymjj_Phi         := ?(jets_bymjj.size>0)? jets_bymjj.at(0).phi            : -999",
     "jet1_bymjj_E           := ?(jets_bymjj.size>0)? jets_bymjj.at(0).energy         : -999",
     "jet2_bymjj_Pt          := ?(jets_bymjj.size>1)? jets_bymjj.at(1).pt             : -999",
+    "jet2_bymjj_TB          := ?(jets_bymjj.size>1)? TB_bymjj.at(1)                  : -999",
+    "jet2_bymjj_TC          := ?(jets_bymjj.size>1)? TC_bymjj.at(1)                  : -999",
     "jet2_bymjj_Eta         := ?(jets_bymjj.size>1)? jets_bymjj.at(1).eta            : -999",
     "jet2_bymjj_Phi         := ?(jets_bymjj.size>1)? jets_bymjj.at(1).phi            : -999",
     "jet2_bymjj_E           := ?(jets_bymjj.size>1)? jets_bymjj.at(1).energy         : -999",
     "jet3_bymjj_Pt          := ?(jets_bymjj.size>2)? jets_bymjj.at(2).pt             : -999",
+    "jet3_bymjj_TB          := ?(jets_bymjj.size>2)? TB_bymjj.at(2)                  : -999",
+    "jet3_bymjj_TC          := ?(jets_bymjj.size>2)? TC_bymjj.at(2)                  : -999",
     "jet3_bymjj_Eta         := ?(jets_bymjj.size>2)? jets_bymjj.at(2).eta            : -999",
     "jet3_bymjj_Phi         := ?(jets_bymjj.size>2)? jets_bymjj.at(2).phi            : -999",
     "jet3_bymjj_E           := ?(jets_bymjj.size>2)? jets_bymjj.at(2).energy         : -999",
+    
+    "jj_bypt_mass           := ?(jets_bypt.size>1)? jj_bypt.M()                      : -999", 
+    "jj_bypt_deltaEta       := ?(jets_bypt.size>1)? abs(jets_bypt.at(1).eta - jets_bypt.at(0).eta)             : -999", 
+    "isSameOrdering         := isSameOrdering  ", 
 
+    "jj_bymjj_mass           := ?(jets_bymjj.size>1)? jj_bymjj.M()                   : -999", 
+    "jj_bymjj_deltaEta       := ?(jets_bymjj.size>1)? abs(jets_bymjj.at(1).eta - jets_bymjj.at(0).eta)             : -999", 
+
+    "TB1                 := ?(jets_bypt.size>0)? TB.at(0)                            : -999",
+    "TB2                 := ?(jets_bypt.size>1)? TB.at(1)                            : -999",
+    "TC1                 := ?(jets_bypt.size>0)? TC.at(0)                            : -999",
+    "TC2                 := ?(jets_bypt.size>1)? TC.at(1)                            : -999",
+    "TB1_genJets                 := ?(genjets.size>0)? TB_genJets.at(0)              : -999",
+    "TB2_genJets                 := ?(genjets.size>1)? TB_genJets.at(1)              : -999",
+    "TC1_genJets                 := ?(genjets.size>0)? TC_genJets.at(0)              : -999",
+    "TC2_genJets                 := ?(genjets.size>1)? TC_genJets.at(1)              : -999",
+    
+    "genPart1_pt         := ?(hasGenPart1) ? genPart1.pt                             : -999",
+    "genPart1_eta        := ?(hasGenPart1) ? genPart1.eta                            : -999",
+    "genPart2_pt         := ?(hasGenPart2) ? genPart2.pt                             : -999",
+    "genPart2_eta        := ?(hasGenPart2) ? genPart2.eta                            : -999",
+    "jj_genPart_mass     := ?(hasGenPart1 && hasGenPart2)? jj_genPart.M()            : -999",
+    "jj_bypt_matchGenPart :=  jj_bypt_matchGenPart   ",
+    "jj_bymjj_matchGenPart := jj_bymjj_matchGenPart  ",
+    #"jj_genJet_recomatch_bypt := jj_genJet_recomatch_bypt ",
+    #"jj_genJet_recomatch_bymjj := jj_genJet_recomatch_bymjj ",
 ]
 
 #wh_variables += [

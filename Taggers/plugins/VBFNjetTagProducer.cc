@@ -92,7 +92,12 @@ namespace flashgg {
         
         // --- find gen qg from hard scattering
         edm::Ptr<reco::GenParticle> genPart1, genPart2;        
-        std::vector<std::pair<float, int> > genpart_idx;
+        std::vector<std::pair<float, int> > genpart_idx; // <pt, idx>
+        
+        edm::Ptr<reco::GenJet> genJet1, genJet2;        
+        std::vector<std::pair<float, int> > genjet1_idx; // <dR wrt genpart1, idx>
+        std::vector<std::pair<float, int> > genjet2_idx; // <dR wrt genpart2, idx>
+        
         if( ! evt.isRealData() ) 
             {
                 evt.getByToken( genPartToken_, genParticles );
@@ -100,9 +105,8 @@ namespace flashgg {
                 for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
                     edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
                     bool hasHiggs = false; 
-                    if(part->isHardProcess()) {
-                        if(abs(part->pdgId()) <= 5 || part->pdgId() == 21) { // quark or gluon
-                            // check if mother has Higgs daughter
+                    if(part->isHardProcess()) {                    
+                        if(abs(part->pdgId()) <= 5 || part->pdgId() == 21) { // quark or gluon                                  // check if mother has Higgs daughter
                             for(unsigned int im = 0 ; im < part->numberOfMothers() ; ++im)
                                 {
                                     const reco::Candidate* mparticle = part->mother(im);
@@ -111,12 +115,11 @@ namespace flashgg {
                                             const reco::Candidate* dparticle = mparticle->daughter(id);
                                             if(dparticle->pdgId() == 25) hasHiggs = true ;
                                             if(hasHiggs) break;
-                                        }
-                                }                        
-                            if (hasHiggs) genpart_idx.push_back(std::make_pair(part->pt(), genLoop));                        
-                        }                    
-                    }
-                } // end gen loop
+                                        }                                    
+                                    if (hasHiggs) genpart_idx.push_back(std::make_pair(part->pt(), genLoop));                               
+                                }             
+                        }
+                    } // end gen paricle loop
             
                 std::sort(genpart_idx.begin(), genpart_idx.end());
                 if (debug_)
@@ -125,12 +128,56 @@ namespace flashgg {
                         std::cout << "  genPart by pt: " << std::endl;
                         for (size_t i = 0; i < genpart_idx.size(); ++i)  std::cout << "  " <<  genpart_idx.at(i).first << "  " <<  genpart_idx.at(i).second << std::endl;   
                         std::cout << std::endl;
-                        std::cout << "  genPart1: " <<  (*(genpart_idx.rbegin())).first     << "  " <<  (*(genpart_idx.rbegin())).second   << std::endl;
-                        std::cout << "  genPart2: " <<  (*(genpart_idx.rbegin() + 1)).first << "  " <<  (*(genpart_idx.rbegin()+1)).second << std::endl;
-                    }
-                
-                if (genpart_idx.size() > 0) genPart1 = genParticles->ptrAt((*(genpart_idx.rbegin())).second);
-                if (genpart_idx.size() > 1) genPart2 = genParticles->ptrAt((*(genpart_idx.rbegin() + 1)).second);            
+                        if (genpart_idx.size() > 2)
+                            {
+                                std::cout << "  genPart1: " <<  (*(genpart_idx.rbegin())).first     << "  " <<  (*(genpart_idx.rbegin())).second   << std::endl;
+                                std::cout << "  genPart2: " <<  (*(genpart_idx.rbegin() + 1)).first << "  " <<  (*(genpart_idx.rbegin()+1)).second << std::endl;
+                            }
+                    }                
+                //TLorentzVector tlv_genpart1, tlv_genpart2, tlv_genjet;
+                if (genpart_idx.size() > 0) {
+                    genPart1 = genParticles->ptrAt((*(genpart_idx.rbegin())).second);
+                }
+                //    tlv_genpart1.SetPxPyPzE(genPart1->px(), 
+                //                            genPart1->py(), 
+                //                            genPart1->pz(), 
+                //                            genPart1->energy());
+                //}
+                if (genpart_idx.size() > 1) {
+                    genPart2 = genParticles->ptrAt((*(genpart_idx.rbegin() + 1)).second);                            }
+                }
+                //    tlv_genpart2.SetPxPyPzE(genPart2->px(), 
+                //                            genPart2->py(), 
+                //                            genPart2->pz(), 
+                //                            genPart2->energy());
+                //}
+                //
+                //for( unsigned int igen = 0 ; igen < genJets->size(); igen++ ) {
+                //    edm::Ptr<reco::GenJet> genjet= genJets->ptrAt( igen );
+                //    tlv_genjet.SetPxPyPzE(genjet->px(),
+                //                          genjet->py(),
+                //                          genjet->pz(),
+                //                          genjet->energy());                    
+                //    if (genpart_idx.size() > 0) 
+                //        genjet1_idx.push_back(std::make_pair(tlv_genjet.DeltaR(tlv_genpart1), igen));
+                //    if (genpart_idx.size() > 1) 
+                //        genjet2_idx.push_back(std::make_pair(tlv_genjet.DeltaR(tlv_genpart2), igen));
+                //}
+                //std::sort(genjet1_idx.begin(), genjet1_idx.end());
+                //std::sort(genjet2_idx.begin(), genjet2_idx.end());
+                //
+                //int idxgenjet1 = -1;
+                //int idxgenjet2 = -1;
+                //
+                //if (genjet1_idx.size() > 0) {
+                //    idxgenjet1 = (*(genjet1_idx.begin())).second ; 
+                //    genJet1    = genJets->ptrAt(idxgenjet1);
+                //}
+                //if (genjet2_idx.size() > 0) {
+                //    idxgenjet2 = (*(genjet2_idx.begin())).second ; 
+                //    if (idxgenjet2 == idxgenjet1) idxgenjet2 = (*(genjet2_idx.begin()+1)).second;
+                //    genJet2    = genJets->ptrAt(idxgenjet2);
+                //}                
             }
         // ---- end of gen p/q stuff
         
@@ -158,10 +205,10 @@ namespace flashgg {
                 if(dRPhoLeadJet < 0.4 || dRPhoSubLeadJet < 0.4) continue;
                 tagJets_bypt.push_back(jet);
             }   
-
+            
             // ---- highest mjj jets
-            std::vector<edm::Ptr<Jet> >            tagJets_bymjj;                 // first 2 jets: highest mjj; following: all the other jets by pt
-            std::vector< tuple<float, unsigned int, unsigned int> >  pair_bymjj;  // (mjj, idx1, idx2)
+            std::vector<edm::Ptr<Jet> >                              tagJets_bymjj;  // first 2 jets: highest mjj; following: all the other jets by pt
+            std::vector< tuple<float, unsigned int, unsigned int> >  pair_bymjj;     // (mjj, idx1, idx2)
             
             for ( unsigned int ijet  = 0; ijet < tagJets_bypt.size() ; ijet ++)
                 {
@@ -197,8 +244,9 @@ namespace flashgg {
                     unsigned int idx2 = std::get<2>(*(pair_bymjj.rbegin()));
                     move(tagJets_bymjj, idx1, 0);
                     move(tagJets_bymjj, idx2, 1);
+                    if (idx1 == 0 && idx2 == 1) vbfnjet_tags_obj.setIsSameOrdering(true);                                    
+
                 }
-            
             if (debug_)
                 {                                      
                     std::cout << "  Jets by pt: ";
@@ -214,16 +262,25 @@ namespace flashgg {
             vbfnjet_tags_obj.setJets_bymjj(tagJets_bymjj);
             vbfnjet_tags_obj.setJets_bypt(tagJets_bypt);     
             vbfnjet_tags_obj.setTB(tagJets_bypt);
+            vbfnjet_tags_obj.setTC(tagJets_bypt);
+
             if (!evt.isRealData()) {
+                std::vector<edm::Ptr<reco::GenJet> >            tagGenJets;
+                vbfnjet_tags_obj.setGenJets(tagGenJets);
+                vbfnjet_tags_obj.setTB(tagGenJets);
+                vbfnjet_tags_obj.setTC(tagGenJets);                
                 if (genpart_idx.size() > 0) vbfnjet_tags_obj.setgenParticle1(genPart1);
                 if (genpart_idx.size() > 1) vbfnjet_tags_obj.setgenParticle2(genPart2);
-            }
+                if (genpart_idx.size() > 0) vbfnjet_tags_obj.setgenParticle1idx(genpart_idx.at(0).second);
+                if (genpart_idx.size() > 1) vbfnjet_tags_obj.setgenParticle2idx(genpart_idx.at(1).second);
+                //if (genJet1.isNonnull()) vbfnjet_tags_obj.setgenJet1(genJet1);
+                //if (genJet2.isNonnull()) vbfnjet_tags_obj.setgenJet2(genJet2);
+            }            
             vbfnjet_tags->push_back(vbfnjet_tags_obj);    
         }
         evt.put(std::move(vbfnjet_tags));
-    }  
-    
-}
+    }      
+ }
 
 typedef flashgg::VBFNjetTagProducer FlashggVBFNjetTagProducer;
 DEFINE_FWK_MODULE( FlashggVBFNjetTagProducer );

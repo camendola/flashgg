@@ -10,9 +10,11 @@ VBFNjetTag::VBFNjetTag() : DiPhotonTagBase::DiPhotonTagBase() {}
 
 VBFNjetTag::~VBFNjetTag() {}
 
-//VBFNjetTag::VBFNjetTag(edm::Ptr<flashgg::DiPhotonCandidate> diPho, edm::Ptr<DiPhotonMVAResult> mvaRes, edm::Ptr<VBFDiPhoDiJetMVAResult> vbfDiPhoDiJet_mvaRes) :
+//VBFNjetTag::VBFNjetTag(edm::Ptr<flashgg::DiPhotonCandidate> diPho, 
+//                       edm::Ptr<DiPhotonMVAResult> mvaRes, 
+//                       edm::Ptr<VBFDiPhoDiJetMVAResult> vbfDiPhoDiJet_mvaRes) :
 //    VBFNjetTag::VBFNjetTag(diPho, *mvaRes, *vbfDiPhoDiJet_mvaRes) {}
-//
+
 //VBFNjetTag::VBFNjetTag(edm::Ptr<DiPhotonCandidate> dipho, DiPhotonMVAResult mvares, VBFDiPhoDiJetMVAResult vbfDiPhoDiJet_mvaRes) :
 //    DiPhotonTagBase::DiPhotonTagBase(dipho, mvares) {}
 
@@ -38,8 +40,8 @@ const TLorentzVector VBFNjetTag::jj(std::vector<edm::Ptr<flashgg::Jet> > Jets) c
     return tlv_jj;
 }
 
-const TLorentzVector VBFNjetTag::jj(edm::Ptr<reco::GenJet>  genJet1, 
-                                    edm::Ptr<reco::GenJet>  genJet2) const
+const TLorentzVector VBFNjetTag::jj(const reco::GenJet* genJet1, 
+                                    const reco::GenJet* genJet2) const
 {
     TLorentzVector tlv_jet1, tlv_jet2;
     tlv_jet1.SetPxPyPzE(genJet1->px(), 
@@ -75,11 +77,45 @@ const vector<double> VBFNjetTag::TB_jetvec(std::vector<edm::Ptr<flashgg::Jet> > 
     std::vector<double > v_TB_j;
     for (unsigned int i = 0; i < Jets.size(); i++)
         {
-        double TB_j = Jets.at(i)->pt()*exp(-fabs(Jets.at(i)->eta()));
-        v_TB_j.push_back(TB_j);
+            double TB_j = Jets.at(i)->pt()*exp(-fabs(Jets.at(i)->eta()));
+            v_TB_j.push_back(TB_j);
         }
     return v_TB_j;
 }
+
+const vector<double> VBFNjetTag::TC_jetvec(std::vector<edm::Ptr<flashgg::Jet> > Jets) const
+{
+    std::vector<double > v_TC_j;
+    for (unsigned int i = 0; i < Jets.size(); i++)
+        {
+            double TC_j = Jets.at(i)->pt()/(2*cosh(Jets.at(i)->eta()));
+            v_TC_j.push_back(TC_j);
+        }
+    return v_TC_j;
+}
+
+const vector<double> VBFNjetTag::TB_jetvec(std::vector<edm::Ptr<reco::GenJet> > Jets) const
+{
+    std::vector<double > v_TB_j;
+    for (unsigned int i = 0; i < Jets.size(); i++)
+        {
+            double TB_j = Jets.at(i)->pt()*exp(-fabs(Jets.at(i)->eta()));
+            v_TB_j.push_back(TB_j);
+        }
+    return v_TB_j;
+}
+
+const vector<double> VBFNjetTag::TC_jetvec(std::vector<edm::Ptr<reco::GenJet> > Jets) const
+{
+    std::vector<double > v_TC_j;
+    for (unsigned int i = 0; i < Jets.size(); i++)
+        {
+            double TC_j = Jets.at(i)->pt()/(2*cosh(Jets.at(i)->eta()));
+            v_TC_j.push_back(TC_j);
+        }
+    return v_TC_j;
+}
+
 
 const bool VBFNjetTag::match_genPart(std::vector<edm::Ptr<flashgg::Jet>> Jets, 
                                      edm::Ptr<reco::GenParticle> genPart1,  
@@ -125,6 +161,28 @@ const bool VBFNjetTag::match_genPart(std::vector<edm::Ptr<flashgg::Jet>> Jets,
         }
     return match;
 }
+
+//const edm::Ptr<reco::GenJet>      VBFNjetTag::getGenJet(int genpartidx, std::vector<edm::Ptr<reco::GenJet> > genJets) const
+//{
+//    int idx = - 1;
+//    for (unsigned int i = 0; i < genJets_.size(); i++)
+//        {
+//            if ((genJets_.at(i)->mother() == genpartidx) && idx == -1) 
+//                {
+//                    idx = i; 
+//                    break;
+//                }
+//        }
+//    if (idx > - 1) return genJets_.at(idx); 
+//}
+
+const reco::GenJet * VBFNjetTag::getGenJet(edm::Ptr<flashgg::Jet> jet, std::vector<edm::Ptr<reco::GenJet> > genJets) const
+{
+    const reco::GenJet * thisGenJet = jet->genJet ();
+    return thisGenJet; 
+}
+
+
 
 //VBFNjetTag::VBFNjetTag(edm::Ptr<flashgg::DiPhotonCandidate> diPho) :
 //    VBFNjetTag::VBFNjetTag(diPho) {}
